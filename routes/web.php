@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\ComunidadeController;
+use App\Http\Controllers\ComunidadesController;
+use App\Http\Controllers\InicioController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +16,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/inicio', [InicioController::class, 'index'])->name('inicio');
+
+Route::get('/comunidades', [ComunidadesController::class, 'index'])->name('comunidades');
+
+Route::get('/comunidade', [ComunidadeController::class, 'index'])->name('comunidade');
+
