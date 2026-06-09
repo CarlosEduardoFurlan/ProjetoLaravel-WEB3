@@ -58,59 +58,53 @@
     </div>
   </section>
 
-  <x-modal id="editCommunityModal" titulo="Editar Comunidade">
-    <form action="{{ route('comunidade.update', $grupo) }}" method="POST" enctype="multipart/form-data">
-      @csrf
-      @method('PUT')
+  <x-modal
+    id="editCommunityModal"
+    titulo="Editar Comunidade"
+    :action="route('comunidade.update', $grupo)"
+    method="PUT"
+    enctype="multipart/form-data"
+    close-id="closeEditModal"
+  >
+    <div class="form-group">
+      <label>Nome da comunidade</label>
+      <input class="form-control" type="text" name="nome" value="{{ old('nome', $grupo->nome) }}" required>
+    </div>
 
-      <div class="form-group">
-        <label>Nome da comunidade</label>
-        <input class="form-control" type="text" name="nome" value="{{ old('nome', $grupo->nome) }}" required>
-      </div>
+    <div class="form-group">
+      <label>Tema</label>
+      <select class="form-select" name="tema">
+        <option value="Tecnologia" @selected(old('tema', $grupo->tema) === 'Tecnologia')>Tecnologia</option>
+        <option value="Games" @selected(old('tema', $grupo->tema) === 'Games')>Games</option>
+        <option value="Anime" @selected(old('tema', $grupo->tema) === 'Anime')>Anime</option>
+        <option value="Música" @selected(old('tema', $grupo->tema) === 'Música')>Música</option>
+        <option value="Filmes" @selected(old('tema', $grupo->tema) === 'Filmes')>Filmes</option>
+      </select>
+    </div>
 
-      <div class="form-group">
-        <label>Tema</label>
-        <select class="form-select" name="tema">
-          <option value="Tecnologia" @selected(old('tema', $grupo->tema) === 'Tecnologia')>Tecnologia</option>
-          <option value="Games" @selected(old('tema', $grupo->tema) === 'Games')>Games</option>
-          <option value="Anime" @selected(old('tema', $grupo->tema) === 'Anime')>Anime</option>
-          <option value="Música" @selected(old('tema', $grupo->tema) === 'Música')>Música</option>
-          <option value="Filmes" @selected(old('tema', $grupo->tema) === 'Filmes')>Filmes</option>
-        </select>
-      </div>
+    <div class="form-group">
+      <label>Editar capa</label>
+      <input class="form-control" type="file" name="imagem_capa" accept="image/*">
+    </div>
 
-      <div class="form-group">
-        <label>Editar capa</label>
-        <input class="form-control" type="file" name="imagem_capa" accept="image/*">
-      </div>
+    <div class="form-group">
+      <label>Editar foto da página</label>
+      <input class="form-control" type="file" name="imagem_logo" accept="image/*">
+    </div>
 
-      <div class="form-group">
-        <label>Editar foto da página</label>
-        <input class="form-control" type="file" name="imagem_logo" accept="image/*">
-      </div>
-
-      <div class="form-group">
-        <label>Descrição</label>
-        <textarea class="form-textarea" name="descricao">{{ old('descricao', $grupo->descricao) }}</textarea>
-      </div>
-
-      <div class="actions">
-        <button class="btn" type="submit">Salvar</button>
-        <button class="btn-secondary" id="closeEditModal" type="button">Cancelar</button>
-      </div>
-    </form>
+    <div class="form-group">
+      <label>Descrição</label>
+      <textarea class="form-textarea" name="descricao">{{ old('descricao', $grupo->descricao) }}</textarea>
+    </div>
   </x-modal>
 
-  <x-modal id="postModal" titulo="Nova Publicação">
-    <form action="{{ route('publicacoes.store', $grupo) }}" method="POST">
-      @csrf
-
-      <textarea class="form-textarea" id="postContent" name="conteudo" placeholder="Compartilhe algo com a comunidade..." required>{{ old('conteudo') }}</textarea>
-
-      <div class="actions" style="margin-top:20px;">
-        <button class="btn" type="submit">Publicar</button>
-        <button class="btn-secondary" id="closePostModal" type="button">Cancelar</button>
-      </div>
-    </form>
+  <x-modal
+    id="postModal"
+    titulo="Nova Publicação"
+    :action="route('publicacoes.store', $grupo)"
+    submit-label="Publicar"
+    close-id="closePostModal"
+  >
+    <textarea class="form-textarea" id="postContent" name="conteudo" placeholder="Compartilhe algo com a comunidade..." required>{{ old('conteudo') }}</textarea>
   </x-modal>
 </x-layout>
