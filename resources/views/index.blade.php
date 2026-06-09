@@ -9,38 +9,23 @@
 
   <h2 class="section-title">Comunidades Populares</h2>
 
-  <section class="community-grid">
-    <div class="card">
-      <div class="card-banner tech"></div>
-      <h2>DevConnect</h2>
-      <p>Comunidade focada em Laravel, JavaScript e programação web.</p>
-      <div class="members">
-        <span>👥 3.1k membros</span>
-        <span class="tag">Tecnologia</span>
+    @foreach ($grupos as $grupo)
+      @php
+        if (!empty($grupo->imagem_capa)) {
+            $bannerUrl = asset('storage/' . ltrim($grupo->imagem_capa, '/'));
+        } else {
+            $bannerUrl = asset('images/sem-imagem-capa.svg');
+        }
+      @endphp
+      <div class="card">
+        <div class="card-banner" style="background-image: url('{{ $bannerUrl }}');"></div>
+        <h2>{{ $grupo->nome }}</h2>
+        <p>{{ $grupo->descricao }}</p>
+        <div class="members">
+          <span>👥 {{ $grupo->membros->count() }} membros</span>
+          <span class="tag">{{ $grupo->tema }}</span>
+        </div>
+        <a href="{{ route('comunidade', ['grupo' => $grupo->id]) }}" class="btn">Entrar</a>
       </div>
-      <a href="{{ route('comunidade') }}" class="btn">Entrar</a>
-    </div>
-
-    <div class="card">
-      <div class="card-banner anime"></div>
-      <h2>Anime World</h2>
-      <p>Discussões sobre animes, mangás e cultura japonesa.</p>
-      <div class="members">
-        <span>👥 1.8k membros</span>
-        <span class="tag">Anime</span>
-      </div>
-      <a href="{{ route('comunidade') }}" class="btn">Entrar</a>
-    </div>
-
-    <div class="card">
-      <div class="card-banner gaming"></div>
-      <h2>GameVerse</h2>
-      <p>Comunidade para jogadores de FPS, RPG e partidas online.</p>
-      <div class="members">
-        <span>👥 2.4k membros</span>
-        <span class="tag">Games</span>
-      </div>
-      <a href="{{ route('comunidade') }}" class="btn">Entrar</a>
-    </div>
-  </section>
+    @endforeach
 </x-layout>

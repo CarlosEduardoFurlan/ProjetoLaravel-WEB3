@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Grupo;
 use Illuminate\Http\Request;
 
 class InicioController extends Controller
@@ -11,7 +12,10 @@ class InicioController extends Controller
      */
     public function index()
     {
-        return view('index');
+        $grupos = Grupo::with('membros')->get();
+        return view('index',[
+            'grupos' => $grupos,
+        ]);
     }
 
     /**

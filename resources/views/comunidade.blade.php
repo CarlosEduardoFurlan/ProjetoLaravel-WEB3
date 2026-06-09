@@ -1,21 +1,38 @@
-<x-layout titulo="Comunidade">
+<x-layout :titulo="'Comunidade - ' . $grupo->nome">
+  @php
+      if (!empty($grupo->imagem_capa)) {
+          $bannerUrl = asset('storage/' . ltrim($grupo->imagem_capa, '/'));
+      } else {
+          $bannerUrl = asset('images/sem-imagem-capa.svg');
+      }
+      if (!empty($grupo->imagem_logo)) {
+          $avatarUrl = asset('storage/' . ltrim($grupo->imagem_logo, '/'));
+      } else {
+          $avatarUrl = asset('images/sem-imagem-avatar.svg');
+      }
+  @endphp
   <section class="community-page">
     <a href="{{ route('comunidades') }}" class="btn-secondary">← Voltar para Comunidades</a>
 
-    <div class="community-cover"></div>
+    <div class="community-cover" style="background-image: url('{{ $bannerUrl }}');"></div>
 
     <div class="community-header">
       <div class="community-info">
-        <div class="community-avatar">D</div>
+        <div class="community-avatar" style="background-image: url('{{ $avatarUrl }}');">
+        </div>
         <div class="community-details">
-          <h1>DevConnect</h1>
-          <p>Comunidade focada em Laravel, JavaScript e programação web.</p>
+          <h1>{{ $grupo->nome }}</h1>
+          <p>{{ $grupo->descricao }}</p>
         </div>
       </div>
 
       <div class="actions">
         <button class="btn-secondary" id="openEditModal">Editar Comunidade</button>
-        <button class="btn-secondary btn-danger" id="deleteCommunityBtn">Excluir Comunidade</button>
+        <form action="{{ route('comunidade.destroy', $grupo) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir esta comunidade?')">
+          @csrf
+          @method('DELETE')
+          <button class="btn-secondary btn-danger" type="submit">Excluir Comunidade</button>
+        </form>
       </div>
     </div>
 
@@ -26,65 +43,74 @@
       </div>
 
       <div class="posts" id="postsContainer">
-        <div class="post-card">
-          <h3>Carlos Eduardo</h3>
-          <p>Bem-vindos à comunidade 🚀</p>
-        </div>
+        @forelse ($grupo->publicacoes as $publicacao)
+          <div class="post-card">
+            <h3>{{ $publicacao->usuario->nome ?? 'Usuário' }}</h3>
+            <p>{{ $publicacao->conteudo }}</p>
+          </div>
+        @empty
+          <div class="post-card">
+            <h3>Sem publicações</h3>
+            <p>Ainda não há publicações nesta comunidade.</p>
+          </div>
+        @endforelse
       </div>
     </div>
   </section>
 
-  <div class="modal" id="editCommunityModal">
-    <div class="modal-content">
-      <h2>Editar Comunidade</h2>
+  <x-modal id="editCommunityModal" titulo="Editar Comunidade">
+    <form action="{{ route('comunidade.update', $grupo) }}" method="POST" enctype="multipart/form-data">
+      @csrf
+      @method('PUT')
 
       <div class="form-group">
         <label>Nome da comunidade</label>
-        <input class="form-control" type="text" value="DevConnect">
+        <input class="form-control" type="text" name="nome" value="{{ old('nome', $grupo->nome) }}" required>
       </div>
 
       <div class="form-group">
         <label>Tema</label>
-        <select class="form-select">
-          <option selected>Tecnologia</option>
-          <option>Games</option>
-          <option>Anime</option>
-          <option>Música</option>
+        <select class="form-select" name="tema">
+          <option value="Tecnologia" @selected(old('tema', $grupo->tema) === 'Tecnologia')>Tecnologia</option>
+          <option value="Games" @selected(old('tema', $grupo->tema) === 'Games')>Games</option>
+          <option value="Anime" @selected(old('tema', $grupo->tema) === 'Anime')>Anime</option>
+          <option value="Música" @selected(old('tema', $grupo->tema) === 'Música')>Música</option>
+          <option value="Filmes" @selected(old('tema', $grupo->tema) === 'Filmes')>Filmes</option>
         </select>
       </div>
 
       <div class="form-group">
         <label>Editar capa</label>
-        <input class="form-control" type="file">
+        <input class="form-control" type="file" name="imagem_capa" accept="image/*">
       </div>
 
       <div class="form-group">
         <label>Editar foto da página</label>
-        <input class="form-control" type="file">
+        <input class="form-control" type="file" name="imagem_logo" accept="image/*">
       </div>
 
       <div class="form-group">
         <label>Descrição</label>
-        <textarea class="form-textarea">Comunidade focada em Laravel, JavaScript e programação web.</textarea>
+        <textarea class="form-textarea" name="descricao">{{ old('descricao', $grupo->descricao) }}</textarea>
       </div>
 
       <div class="actions">
-        <button class="btn">Salvar</button>
-        <button class="btn-secondary" id="closeEditModal">Cancelar</button>
+        <button class="btn" type="submit">Salvar</button>
+        <button class="btn-secondary" id="closeEditModal" type="button">Cancelar</button>
       </div>
-    </div>
-  </div>
+    </form>
+  </x-modal>
 
-  <div class="modal" id="postModal">
-    <div class="modal-content">
-      <h2>Nova Publicação</h2>
+  <x-modal id="postModal" titulo="Nova Publicação">
+    <form action="{{ route('publicacoes.store', $grupo) }}" method="POST">
+      @csrf
 
-      <textarea class="form-textarea" id="postContent" placeholder="Compartilhe algo com a comunidade..."></textarea>
+      <textarea class="form-textarea" id="postContent" name="conteudo" placeholder="Compartilhe algo com a comunidade..." required>{{ old('conteudo') }}</textarea>
 
       <div class="actions" style="margin-top:20px;">
-        <button class="btn" id="publishPostBtn">Publicar</button>
-        <button class="btn-secondary" id="closePostModal">Cancelar</button>
+        <button class="btn" type="submit">Publicar</button>
+        <button class="btn-secondary" id="closePostModal" type="button">Cancelar</button>
       </div>
-    </div>
-  </div>
+    </form>
+  </x-modal>
 </x-layout>

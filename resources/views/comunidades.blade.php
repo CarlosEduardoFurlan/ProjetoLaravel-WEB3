@@ -8,80 +8,65 @@
 
   <h2 class="section-title">Todas as Comunidades</h2>
 
-  <section class="community-grid" id="communityGrid">
+  @foreach ($grupos as $grupo)
+    @php
+        if (!empty($grupo->imagem_capa)) {
+            $bannerUrl = asset('storage/' . ltrim($grupo->imagem_capa, '/'));
+        } else {
+            $bannerUrl = asset('images/sem-imagem-capa.svg');
+        }
+    @endphp
     <div class="card">
-      <div class="card-banner tech"></div>
-      <h2>DevConnect</h2>
-      <p>Comunidade focada em Laravel, JavaScript e programação web.</p>
+      <div class="card-banner" style="background-image: url('{{ $bannerUrl }}');"></div>
+      <h2>{{ $grupo->nome }}</h2>
+      <p>{{ $grupo->descricao }}</p>
       <div class="members">
-        <span>👥 3.1k membros</span>
-        <span class="tag">Tecnologia</span>
+        <span>👥 {{ $grupo->membros->count() }} membros</span>
+        <span class="tag">{{ $grupo->tema }}</span>
       </div>
-      <a href="{{ route('comunidade') }}" class="btn">Entrar</a>
+      <a href="{{ route('comunidade', ['grupo' => $grupo->id]) }}" class="btn">Entrar</a>
     </div>
+  @endforeach
 
-    <div class="card">
-      <div class="card-banner anime"></div>
-      <h2>Anime World</h2>
-      <p>Discussões sobre animes, mangás e cultura japonesa.</p>
-      <div class="members">
-        <span>👥 1.8k membros</span>
-        <span class="tag">Anime</span>
-      </div>
-      <a href="{{ route('comunidade') }}" class="btn">Entrar</a>
-    </div>
-
-    <div class="card">
-      <div class="card-banner gaming"></div>
-      <h2>GameVerse</h2>
-      <p>Comunidade para jogadores de FPS, RPG e partidas online.</p>
-      <div class="members">
-        <span>👥 2.4k membros</span>
-        <span class="tag">Games</span>
-      </div>
-      <a href="{{ route('comunidade') }}" class="btn">Entrar</a>
-    </div>
-  </section>
-
-  <div class="modal" id="createCommunityModal">
-    <div class="modal-content">
-      <h2>Criar Comunidade</h2>
+  <x-modal id="createCommunityModal" titulo="Criar Comunidade">
+    <form action="{{ route('comunidades.store') }}" method="POST" enctype="multipart/form-data">
+      @csrf
 
       <div class="form-group">
         <label>Nome da comunidade</label>
-        <input class="form-control" type="text" placeholder="Ex: DevConnect">
+        <input class="form-control" type="text" name="nome" value="{{ old('nome') }}" placeholder="Ex: DevConnect" required>
       </div>
 
       <div class="form-group">
         <label>Tema</label>
-        <select class="form-select">
-          <option>Tecnologia</option>
-          <option>Games</option>
-          <option>Anime</option>
-          <option>Música</option>
-          <option>Filmes</option>
+        <select class="form-select" name="tema">
+          <option value="Tecnologia" @selected(old('tema') === 'Tecnologia')>Tecnologia</option>
+          <option value="Games" @selected(old('tema') === 'Games')>Games</option>
+          <option value="Anime" @selected(old('tema') === 'Anime')>Anime</option>
+          <option value="Música" @selected(old('tema') === 'Música')>Música</option>
+          <option value="Filmes" @selected(old('tema') === 'Filmes')>Filmes</option>
         </select>
       </div>
 
       <div class="form-group">
         <label>Adicionar capa</label>
-        <input class="form-control" type="file">
+        <input class="form-control" type="file" name="imagem_capa" accept="image/*">
       </div>
 
       <div class="form-group">
         <label>Adicionar foto da página</label>
-        <input class="form-control" type="file">
+        <input class="form-control" type="file" name="imagem_logo" accept="image/*">
       </div>
 
       <div class="form-group">
         <label>Descrição</label>
-        <textarea class="form-textarea" placeholder="Descrição da comunidade"></textarea>
+        <textarea class="form-textarea" name="descricao" placeholder="Descrição da comunidade">{{ old('descricao') }}</textarea>
       </div>
 
       <div class="actions">
-        <button class="btn">Salvar</button>
-        <button class="btn-secondary" id="closeCreateModal">Cancelar</button>
+        <button class="btn" type="submit">Salvar</button>
+        <button class="btn-secondary" id="closeCreateModal" type="button">Cancelar</button>
       </div>
-    </div>
-  </div>
+    </form>
+  </x-modal>
 </x-layout>

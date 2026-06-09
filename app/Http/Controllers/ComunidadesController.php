@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Grupo;
 use Illuminate\Http\Request;
 
 class ComunidadesController extends Controller
@@ -11,7 +12,10 @@ class ComunidadesController extends Controller
      */
     public function index()
     {
-        return view('comunidades');
+        $grupos = Grupo::with('membros')->get();
+        return view('comunidades',[
+            'grupos' => $grupos,
+        ]);
     }
 
     /**
@@ -27,7 +31,27 @@ class ComunidadesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $dados = $request->validate([
+            'nome' => ['required', 'string', 'max:120'],
+            'tema' => ['nullable', 'string', 'max:80'],
+            'descricao' => ['nullable', 'string'],
+            'imagem_capa' => ['nullable', 'image', 'max:2048'],
+            'imagem_logo' => ['nullable', 'image', 'max:2048'],
+        ]);
+
+        if ($request->hasFile('imagem_capa')) {
+            $dados['imagem_capa'] = $request->file('imagem_capa')->store('comunidades/capas', 'public');
+        }
+
+        if ($request->hasFile('imagem_logo')) {
+            $dados['imagem_logo'] = $request->file('imagem_logo')->store('comunidades/logos', 'public');
+        }
+
+        $dados['usuario_criador_id'] = 1;
+
+        $grupo = Grupo::create($dados);
+
+        return redirect()->route('comunidade', $grupo)->with('success', 'Comunidade criada com sucesso!');
     }
 
     /**

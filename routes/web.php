@@ -19,6 +19,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/inicio', [InicioController::class, 'index'])->name('inicio');
 
 Route::get('/comunidades', [ComunidadesController::class, 'index'])->name('comunidades');
+Route::post('/comunidades', [ComunidadesController::class, 'store'])->name('comunidades.store');
 
-Route::get('/comunidade', [ComunidadeController::class, 'index'])->name('comunidade');
-
+Route::get('/comunidade/{grupo}', [ComunidadeController::class, 'show'])->name('comunidade');
+Route::put('/comunidade/{grupo}', [ComunidadeController::class, 'update'])->name('comunidade.update');
+Route::delete('/comunidade/{grupo}', [ComunidadeController::class, 'destroy'])->name('comunidade.destroy');
+Route::post('/comunidade/{grupo}/publicacoes', [ComunidadeController::class, 'storePublicacao'])->name('publicacoes.store');
