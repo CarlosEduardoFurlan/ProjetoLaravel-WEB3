@@ -64,39 +64,10 @@
     :action="route('comunidade.update', $grupo)"
     method="PUT"
     enctype="multipart/form-data"
+    form-type="community"
+    :grupo="$grupo"
     close-id="closeEditModal"
-  >
-    <div class="form-group">
-      <label>Nome da comunidade</label>
-      <input class="form-control" type="text" name="nome" value="{{ old('nome', $grupo->nome) }}" required>
-    </div>
-
-    <div class="form-group">
-      <label>Tema</label>
-      <select class="form-select" name="tema">
-        <option value="Tecnologia" @selected(old('tema', $grupo->tema) === 'Tecnologia')>Tecnologia</option>
-        <option value="Games" @selected(old('tema', $grupo->tema) === 'Games')>Games</option>
-        <option value="Anime" @selected(old('tema', $grupo->tema) === 'Anime')>Anime</option>
-        <option value="Música" @selected(old('tema', $grupo->tema) === 'Música')>Música</option>
-        <option value="Filmes" @selected(old('tema', $grupo->tema) === 'Filmes')>Filmes</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label>Editar capa</label>
-      <input class="form-control" type="file" name="imagem_capa" accept="image/*">
-    </div>
-
-    <div class="form-group">
-      <label>Editar foto da página</label>
-      <input class="form-control" type="file" name="imagem_logo" accept="image/*">
-    </div>
-
-    <div class="form-group">
-      <label>Descrição</label>
-      <textarea class="form-textarea" name="descricao">{{ old('descricao', $grupo->descricao) }}</textarea>
-    </div>
-  </x-modal>
+  />
 
   <x-modal
     id="postModal"

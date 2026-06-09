@@ -33,37 +33,7 @@
     titulo="Criar Comunidade"
     :action="route('comunidades.store')"
     enctype="multipart/form-data"
+    form-type="community"
     close-id="closeCreateModal"
-  >
-    <div class="form-group">
-      <label>Nome da comunidade</label>
-      <input class="form-control" type="text" name="nome" value="{{ old('nome') }}" placeholder="Ex: DevConnect" required>
-    </div>
-
-    <div class="form-group">
-      <label>Tema</label>
-      <select class="form-select" name="tema">
-        <option value="Tecnologia" @selected(old('tema') === 'Tecnologia')>Tecnologia</option>
-        <option value="Games" @selected(old('tema') === 'Games')>Games</option>
-        <option value="Anime" @selected(old('tema') === 'Anime')>Anime</option>
-        <option value="Música" @selected(old('tema') === 'Música')>Música</option>
-        <option value="Filmes" @selected(old('tema') === 'Filmes')>Filmes</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label>Adicionar capa</label>
-      <input class="form-control" type="file" name="imagem_capa" accept="image/*">
-    </div>
-
-    <div class="form-group">
-      <label>Adicionar foto da página</label>
-      <input class="form-control" type="file" name="imagem_logo" accept="image/*">
-    </div>
-
-    <div class="form-group">
-      <label>Descrição</label>
-      <textarea class="form-textarea" name="descricao" placeholder="Descrição da comunidade">{{ old('descricao') }}</textarea>
-    </div>
-  </x-modal>
+  />
 </x-layout>
