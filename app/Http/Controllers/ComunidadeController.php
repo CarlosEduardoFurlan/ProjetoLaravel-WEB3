@@ -11,7 +11,11 @@ class ComunidadeController extends Controller
 {
     public function show(Grupo $grupo)
     {
-        $grupo->load(['membros', 'publicacoes.usuario', 'criador']);
+        $grupo->load([
+            'membros',
+            'publicacoes' => fn ($query) => $query->with('usuario')->latest('criado_em'),
+            'criador',
+        ]);
 
         return view('comunidade', [
             'grupo' => $grupo,
@@ -49,6 +53,10 @@ class ComunidadeController extends Controller
     {
         $grupo = Grupo::findOrFail($id);
 
+        if ($grupo->usuario_criador_id !== $request->user()->id) {
+            abort(403);
+        }
+
         $dados = $request->validate([
             'nome' => ['required', 'string', 'max:120'],
             'tema' => ['nullable', 'string', 'max:80'],
@@ -85,6 +93,10 @@ class ComunidadeController extends Controller
     {
         $grupo = Grupo::findOrFail($id);
 
+        if ($grupo->usuario_criador_id !== request()->user()->id) {
+            abort(403);
+        }
+
         if ($grupo->imagem_capa) {
             Storage::disk('public')->delete($grupo->imagem_capa);
         }
@@ -106,10 +118,30 @@ class ComunidadeController extends Controller
 
         Publicacao::create([
             'grupo_id' => $grupo->id,
-            'usuario_id' => 1,
+            'usuario_id' => $request->user()->id,
             'conteudo' => $dados['conteudo'],
         ]);
 
         return redirect()->route('comunidade', $grupo)->with('success', 'Publicacao criada com sucesso!');
+    }
+
+    public function updatePublicacao(Request $request, Publicacao $publicacao)
+    {
+        $podeGerenciarComunidade = $request->user()->perfil?->nome === 'ADMINISTRADOR'
+            && $publicacao->grupo->usuario_criador_id === $request->user()->id;
+
+        if ($publicacao->usuario_id !== $request->user()->id && !$podeGerenciarComunidade) {
+            abort(403);
+        }
+
+        $dados = $request->validate([
+            'conteudo' => ['required', 'string'],
+        ]);
+
+        $publicacao->update($dados);
+
+        return redirect()
+            ->route('comunidade', $publicacao->grupo)
+            ->with('success', 'Publicacao atualizada com sucesso!');
     }
 }

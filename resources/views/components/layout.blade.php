@@ -15,15 +15,29 @@
       <div>
         <div class="logo">ConnectZone</div>
         <nav class="menu">
-          <a href="{{ route('inicio') }}" @class(['active' => request()->routeIs('inicio')])>🏠 Início</a>
-          <a href="{{ route('comunidades') }}" @class(['active' => request()->routeIs('comunidades')])>👥 Comunidades</a>
+          @auth
+            @if (auth()->user()->perfil?->nome === 'ADMINISTRADOR')
+              <a href="{{ route('inicio') }}" @class(['active' => request()->routeIs('inicio')])>🏠 Início</a>
+              <a href="{{ route('comunidades') }}" @class(['active' => request()->routeIs('comunidades')])>👥 Comunidades</a>
+            @else
+              <a href="{{ route('usuario.inicio') }}" @class(['active' => request()->routeIs('usuario.inicio')])>🏠 Início</a>
+              <a href="{{ route('usuario.comunidades') }}" @class(['active' => request()->routeIs('usuario.comunidades')])>👥 Comunidades</a>
+            @endif
+          @endauth
         </nav>
       </div>
 
-      <div class="profile">
-        <h3>Carlos Eduardo</h3>
-        <span>Administrador</span>
-      </div>
+      @auth
+        <div class="profile">
+          <h3>{{ auth()->user()->nome }}</h3>
+          <span>{{ auth()->user()->perfil?->nome }}</span>
+
+          <form action="{{ route('logout') }}" method="POST" class="logout-form">
+            @csrf
+            <button class="btn-secondary" type="submit">Sair</button>
+          </form>
+        </div>
+      @endauth
     </aside>
 
     <main class="main">

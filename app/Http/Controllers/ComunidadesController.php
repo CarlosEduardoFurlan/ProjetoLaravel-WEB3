@@ -12,9 +12,23 @@ class ComunidadesController extends Controller
      */
     public function index()
     {
-        $grupos = Grupo::with('membros')->get();
+        $idsComunidadesUsuario = auth()->user()->grupos()->pluck('grupos.id');
+
+        $comunidadesParticipando = Grupo::withCount('membros')
+            ->where('usuario_criador_id', '!=', auth()->id())
+            ->whereIn('id', $idsComunidadesUsuario)
+            ->latest('criado_em')
+            ->get();
+
+        $outrasComunidades = Grupo::withCount('membros')
+            ->where('usuario_criador_id', '!=', auth()->id())
+            ->whereNotIn('id', $idsComunidadesUsuario)
+            ->latest('criado_em')
+            ->get();
+
         return view('comunidades',[
-            'grupos' => $grupos,
+            'comunidadesParticipando' => $comunidadesParticipando,
+            'outrasComunidades' => $outrasComunidades,
         ]);
     }
 
@@ -47,9 +61,14 @@ class ComunidadesController extends Controller
             $dados['imagem_logo'] = $request->file('imagem_logo')->store('comunidades/logos', 'public');
         }
 
-        $dados['usuario_criador_id'] = 1;
+        $dados['usuario_criador_id'] = $request->user()->id;
 
         $grupo = Grupo::create($dados);
+
+        $grupo->membros()->attach($request->user()->id, [
+            'papel' => 'ADMIN_GRUPO',
+            'criado_em' => now(),
+        ]);
 
         return redirect()->route('comunidade', $grupo)->with('success', 'Comunidade criada com sucesso!');
     }

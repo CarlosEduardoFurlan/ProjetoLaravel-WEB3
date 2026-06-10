@@ -12,7 +12,11 @@ class InicioController extends Controller
      */
     public function index()
     {
-        $grupos = Grupo::with('membros')->get();
+        $grupos = Grupo::withCount('membros')
+            ->where('usuario_criador_id', auth()->id())
+            ->latest('criado_em')
+            ->get();
+
         return view('index',[
             'grupos' => $grupos,
         ]);

@@ -1,19 +1,10 @@
-<x-layout titulo="ConnectZone - Início">
-  <section class="hero">
-    <div>
-      <h1>Olá, {{ auth()->user()->nome }}</h1>
-      <p>Gerencie as comunidades que você criou e acompanhe a participação dos membros.</p>
-    </div>
-    <img src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" alt="Comunidades">
-  </section>
-
-  <h2 class="section-title">Suas Comunidades</h2>
+<x-layout titulo="ConnectZone - Comunidades">
+  <h2 class="section-title">Comunidades Disponíveis</h2>
 
   @if ($grupos->isEmpty())
     <div class="post-card">
-      <h3>Você ainda não criou comunidades</h3>
-      <p>Crie sua primeira comunidade para começar a organizar membros e publicações.</p>
-      <a href="{{ route('comunidades') }}" class="btn">Criar Comunidade</a>
+      <h3>Nenhuma comunidade disponível</h3>
+      <p>Você já participa de todas as comunidades criadas até agora.</p>
     </div>
   @else
     <div class="community-grid">
@@ -26,7 +17,7 @@
           }
         @endphp
 
-        <div class="card">
+        <article class="card">
           <div class="card-banner" style="background-image: url('{{ $bannerUrl }}');"></div>
           <h2>{{ $grupo->nome }}</h2>
           <p>{{ $grupo->descricao }}</p>
@@ -34,8 +25,12 @@
             <span>👥 {{ $grupo->membros_count }} membros</span>
             <span class="tag">{{ $grupo->tema }}</span>
           </div>
-          <a href="{{ route('comunidade', ['grupo' => $grupo->id]) }}" class="btn">Entrar</a>
-        </div>
+
+          <form action="{{ route('usuario.comunidades.participar', $grupo) }}" method="POST">
+            @csrf
+            <button class="btn" type="submit">Participar</button>
+          </form>
+        </article>
       @endforeach
     </div>
   @endif
